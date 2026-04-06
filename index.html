@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线刷视频😎</title>
+    <style>
+        /* ==================== 基础样式重置 ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body,
+        html {
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ==================== 视频播放器样式 ==================== */
+        #player {
+            position: absolute;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ==================== 按钮样式 ==================== */
+        .btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 13rem;
+            height: 3rem;
+            background-size: 300% 300%;
+            backdrop-filter: blur(1rem);
+            border-radius: 5rem;
+            transition: 0.5s;
+            animation: gradient_301 5s ease infinite;
+            border: double 4px transparent;
+            background-image: linear-gradient(#212121, #212121), linear-gradient(137.48deg, #ffdb3b 10%, #FE53BB 45%, #8F51EA 67%, #0044ff 87%);
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+        }
+
+        .btn:hover #container-stars {
+            z-index: 1;
+            background-color: #212121;
+        }
+
+        .btn:active {
+            border: double 4px #FE53BB;
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            animation: none;
+        }
+
+        .btn:active .circle {
+            background: #FE53BB;
+        }
+
+        /* 按钮文字 */
+        strong {
+            z-index: 2;
+            font-family: 'Avalors Personal Use';
+            font-size: 12px;
+            letter-spacing: 5px;
+            color: #FFFFFF;
+            text-shadow: 0 0 4px white;
+        }
+
+        /* ==================== 星星动画容器 ==================== */
+        #container-stars {
+            position: absolute;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            transition: 0.5s;
+            backdrop-filter: blur(1rem);
+            border-radius: 5rem;
+        }
+
+        #stars {
+            position: relative;
+            background: transparent;
+            width: 200rem;
+            height: 200rem;
+        }
+
+        #stars::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 170%;
+            height: 500%;
+            animation: animStar 60s linear infinite;
+            background-image: radial-gradient(#ffffff 1px, transparent 1%);
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        #stars::after {
+            content: "";
+            position: absolute;
+            top: -10rem;
+            left: -100rem;
+            width: 100%;
+            height: 100%;
+            animation: animStarRotate 90s linear infinite;
+            background-image: radial-gradient(#ffffff 1px, transparent 1%);
+            background-size: 50px 50px;
+        }
+
+        /* ==================== 发光效果 ==================== */
+        #glow {
+            position: absolute;
+            display: flex;
+            width: 12rem;
+        }
+
+        .circle {
+            width: 100%;
+            height: 30px;
+            filter: blur(2rem);
+            animation: pulse_3011 4s infinite;
+            z-index: -1;
+        }
+
+        .circle:nth-of-type(1) {
+            background: rgba(254, 83, 186, 0.636);
+        }
+
+        .circle:nth-of-type(2) {
+            background: rgba(142, 81, 234, 0.704);
+        }
+
+        /* ==================== 按钮容器定位 ==================== */
+        #diy {
+            position: absolute;
+            top: 96%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* ==================== 渐变背景 ==================== */
+        .gradient {
+            z-index: -2;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 600% 600%;
+            animation: gradientBG 5s ease infinite;
+        }
+
+        /* ==================== 动画关键帧 ==================== */
+        @keyframes animStar {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-135rem);
+            }
+        }
+
+        @keyframes animStarRotate {
+            from {
+                transform: rotate(360deg);
+            }
+            to {
+                transform: rotate(0);
+            }
+        }
+
+        @keyframes gradient_301 {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes pulse_3011 {
+            0% {
+                transform: scale(0.75);
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+            }
+            100% {
+                transform: scale(0.75);
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+            }
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="gradient"></div>
+    <video id="player" src="" controls controlsList="nodownload" webkit-playsinline playsinline autoplay onended="refreshVideo()"></video>
+    <div id="diy">
+        <button onclick="refreshVideo()" id="myButton" class="btn" type="button">
+            <strong>SPACE</strong>
+            <div id="container-stars">
+                <div id="stars"></div>
+            </div>
+            <div id="glow">
+                <div class="circle"></div>
+                <div class="circle"></div>
+            </div>
+        </button>
+    </div>
+
+    <script>
+        /* ==================== API 接口配置 ==================== */
+
+        // 移动端 API 接口列表
+        const mobileApiList = [
+            'http://xjj2.716888.xyz/fenlei/djxjj/dj1.php',
+            'http://xjj2.716888.xyz/fenlei/zj/gengxin/gengxin.php',
+            'http://xjj2.716888.xyz/fenlei/zj/jipinyz/jipinyz.php',
+            'http://xjj2.716888.xyz/fenlei/zj/xuejie/xuejie.php',
+            'http://xjj2.716888.xyz/fenlei/zj/kawayi/kawayi.php',
+            'http://xjj2.716888.xyz/fenlei/zj/nennen/nennen.php',
+            'http://xjj2.716888.xyz/fenlei/zj/sihuawd/sihuawd.php',
+            'http://xjj2.716888.xyz/fenlei/zj/wanmeisc/wanmeisc.php',
+            'http://xjj2.716888.xyz/fenlei/zj/manyao/manyao.php',
+            'http://xjj2.716888.xyz/fenlei/zj/sihuadd/sihuadd.php',
+            'http://xjj2.716888.xyz/fenlei/zj/qingchun/qingchun.php',
+            'http://xjj2.716888.xyz/fenlei/zj/cos/cos.php',
+            'http://xjj2.716888.xyz/fenlei/zj/jiepai/jiepai.php',
+            'http://xjj2.716888.xyz/fenlei/zj/jingpinbz/jingpinbz.php',
+            'http://xjj2.716888.xyz/fenlei/zj/jipinll/jipinll.php',
+            'http://xjj2.716888.xyz/fenlei/zj/nideym/nideym.php',
+            'http://xjj2.716888.xyz/fenlei/zj/tianmei/tianmei.php',
+            'http://xjj2.716888.xyz/fenlei/zj/yusi/yusi.php',
+            'http://xjj2.716888.xyz/fenlei/zj/rewu/rewu.php',
+            'http://xjj2.716888.xyz/fenlei/zj/jingpinsc/jingpinsc.php',
+            'http://xjj2.716888.xyz/fenlei/api/api1.php',
+            'http://xjj2.716888.xyz/fenlei/zj/heji1/heji1.php',
+            'http://xjj2.716888.xyz/fenlei/tkxjj/tk.php',
+            'http://xjj2.716888.xyz/fenlei/mvmn/mvmn.php',
+        ];
+
+        // 电脑端 API 接口列表（空字符串为备用位置，可填入接口）
+        const desktopApiList = [
+            'http://xjj2.716888.xyz/fenlei/api/apiheng1.php',
+            '',
+            '',
+            '',
+        ];
+
+        // 备用 API 接口（各端共用）
+        const fallbackApi = 'https://api.yujn.cn/api/zzxjj.php';
+
+        /* ==================== 工具函数 ==================== */
+
+        /**
+         * 检测是否为电脑端
+         * @returns {boolean} true: 电脑端, false: 移动端
+         */
+        function isDesktop() {
+            return !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        /**
+         * 从接口列表中获取有效的随机接口
+         * @param {string[]} list - API 接口列表
+         * @returns {string|null} 有效接口或 null
+         */
+        function getValidApi(list) {
+            const validApis = list.filter(api => api.trim() !== '');
+            if (validApis.length === 0) return null;
+            return validApis[Math.floor(Math.random() * validApis.length)];
+        }
+
+        /**
+         * 根据设备类型获取随机 API 接口
+         * @returns {string} API 接口地址
+         */
+        function getRandomApi() {
+            if (isDesktop()) {
+                const api = getValidApi(desktopApiList);
+                return api || fallbackApi;
+            }
+            return mobileApiList[Math.floor(Math.random() * mobileApiList.length)];
+        }
+
+        /**
+         * 加载视频并绑定错误处理
+         * @param {HTMLVideoElement} videoElement - 视频元素
+         */
+        function loadVideo(videoElement) {
+            videoElement.src = getRandomApi();
+            videoElement.onerror = function() {
+                console.error('视频加载失败，尝试访问备用 API');
+                videoElement.src = fallbackApi;
+            };
+        }
+
+        /* ==================== 初始化 ==================== */
+
+        const video = document.getElementById('player');
+        loadVideo(video);
+
+        /* ==================== 事件监听 ==================== */
+
+        // 空格键切换视频
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                event.preventDefault();
+                refreshVideo();
+            }
+        });
+
+        // 刷新视频
+        function refreshVideo() {
+            loadVideo(video);
+        }
+
+        /* ==================== 按钮拖拽功能 ==================== */
+
+        const dragElement = document.getElementById('diy');
+        let isDragging = false;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        dragElement.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            offsetX = e.clientX - dragElement.offsetLeft;
+            offsetY = e.clientY - dragElement.offsetTop;
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+
+            const maxX = window.innerWidth - dragElement.offsetWidth;
+            const maxY = window.innerHeight * 1.027 - dragElement.offsetHeight;
+
+            const left = Math.max(0, Math.min(e.clientX - offsetX, maxX));
+            const top = Math.max(0, Math.min(e.clientY - offsetY, maxY));
+
+            dragElement.style.left = left + 'px';
+            dragElement.style.top = top + 'px';
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+    </script>
+</body>
+
+</html>
