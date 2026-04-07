@@ -269,12 +269,12 @@
             'http://xjj2.716888.xyz/fenlei/mvmn/mvmn.php',
         ];
 
-        // 电脑端 API 接口列表
+        // 电脑端 API 接口列表（空字符串为备用位置，可填入接口）
         const desktopApiList = [
-            'http://xjj2.716888.xyz/fenlei/api/apiheng1.php',  // 主接口
-            '',  // 备用1 - 可填入接口
-            '',  // 备用2 - 可填入接口
-            '',  // 备用3 - 可填入接口
+            'http://xjj2.716888.xyz/fenlei/api/apiheng1.php',
+            '',
+            '',
+            '',
         ];
 
         // 备用 API 接口（各端共用）
@@ -302,15 +302,14 @@
         }
 
         /**
-         * 根据设备类型获取 API 接口
+         * 根据设备类型获取随机 API 接口
          * @returns {string} API 接口地址
          */
         function getRandomApi() {
             if (isDesktop()) {
-                // 电脑端固定使用第一个接口
-                return desktopApiList[0] || fallbackApi;
+                const api = getValidApi(desktopApiList);
+                return api || fallbackApi;
             }
-            // 移动端随机选择接口
             return mobileApiList[Math.floor(Math.random() * mobileApiList.length)];
         }
 
