@@ -1,4 +1,15 @@
 <!DOCTYPE html>
+<!--
+融合版在线刷视频页面
+功能说明：
+1. 设备识别：自动检测电脑端/移动端
+2. API接口：根据设备类型使用不同的接口
+3. 视频播放：支持自动播放、循环播放、控制功能
+4. 控制按钮：具有特效和拖拽功能
+5. 快捷键：空格键可刷新视频
+6. 样式：包含渐变背景和按钮特效
+7. 兼容性：隐藏Tailwind CDN注入的演示警告元素
+-->
 <html lang="zh">
 
 <head>
@@ -7,12 +18,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>在线刷视频😎</title>
     <style>
-        /* ==================== 基础样式重置 ==================== */
+        /* 精准定位Tailwind CDN注入的演示警告元素，全属性强制隐藏 */
+        .tailwind-demo-warning,
+        [data-tw-demo],
+        div[data-tw-demo],
+        body > div:last-child:not(#popup):not(nav):not(footer) {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0px !important;
+            width: 0px !important;
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+            z-index: -9999 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+        }
+        /* 兜底：防止任何底部未知元素显示，强制页面底部无内容 */
+        html, body {
+            overflow-x: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            padding-bottom: 0px !important;
+        }
+
+        /* 全局样式重置 */
         * {
             margin: 0;
             padding: 0;
         }
 
+        /* 基础页面样式 */
         body,
         html {
             background-color: #000;
@@ -20,7 +58,7 @@
             padding: 0;
         }
 
-        /* ==================== 视频播放器样式 ==================== */
+        /* 视频播放器样式 */
         #player {
             position: absolute;
             z-index: -1;
@@ -28,7 +66,7 @@
             height: 100%;
         }
 
-        /* ==================== 按钮样式 ==================== */
+        /* 特效按钮样式 */
         .btn {
             display: flex;
             justify-content: center;
@@ -46,37 +84,7 @@
             background-clip: content-box, border-box;
         }
 
-        .btn:hover {
-            transform: scale(1.1);
-        }
-
-        .btn:hover #container-stars {
-            z-index: 1;
-            background-color: #212121;
-        }
-
-        .btn:active {
-            border: double 4px #FE53BB;
-            background-origin: border-box;
-            background-clip: content-box, border-box;
-            animation: none;
-        }
-
-        .btn:active .circle {
-            background: #FE53BB;
-        }
-
-        /* 按钮文字 */
-        strong {
-            z-index: 2;
-            font-family: 'Avalors Personal Use';
-            font-size: 12px;
-            letter-spacing: 5px;
-            color: #FFFFFF;
-            text-shadow: 0 0 4px white;
-        }
-
-        /* ==================== 星星动画容器 ==================== */
+        /* 星星效果容器 */
         #container-stars {
             position: absolute;
             z-index: -1;
@@ -88,45 +96,24 @@
             border-radius: 5rem;
         }
 
-        #stars {
-            position: relative;
-            background: transparent;
-            width: 200rem;
-            height: 200rem;
+        /* 按钮文本样式 */
+        strong {
+            z-index: 2;
+            font-family: 'Avalors Personal Use';
+            font-size: 12px;
+            letter-spacing: 5px;
+            color: #FFFFFF;
+            text-shadow: 0 0 4px white;
         }
 
-        #stars::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -50%;
-            width: 170%;
-            height: 500%;
-            animation: animStar 60s linear infinite;
-            background-image: radial-gradient(#ffffff 1px, transparent 1%);
-            background-size: 50px 50px;
-            opacity: 0.5;
-        }
-
-        #stars::after {
-            content: "";
-            position: absolute;
-            top: -10rem;
-            left: -100rem;
-            width: 100%;
-            height: 100%;
-            animation: animStarRotate 90s linear infinite;
-            background-image: radial-gradient(#ffffff 1px, transparent 1%);
-            background-size: 50px 50px;
-        }
-
-        /* ==================== 发光效果 ==================== */
+        /* 发光效果容器 */
         #glow {
             position: absolute;
             display: flex;
             width: 12rem;
         }
 
+        /* 发光圆圈样式 */
         .circle {
             width: 100%;
             height: 30px;
@@ -135,15 +122,131 @@
             z-index: -1;
         }
 
+        /* 第一个发光圆圈颜色 */
         .circle:nth-of-type(1) {
             background: rgba(254, 83, 186, 0.636);
         }
 
+        /* 第二个发光圆圈颜色 */
         .circle:nth-of-type(2) {
             background: rgba(142, 81, 234, 0.704);
         }
 
-        /* ==================== 按钮容器定位 ==================== */
+        /* 按钮悬停时星星容器效果 */
+        .btn:hover #container-stars {
+            z-index: 1;
+            background-color: #212121;
+        }
+
+        /* 按钮悬停效果 */
+        .btn:hover {
+            transform: scale(1.1)
+        }
+
+        /* 按钮点击效果 */
+        .btn:active {
+            border: double 4px #FE53BB;
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            animation: none;
+        }
+
+        /* 按钮点击时发光圆圈效果 */
+        .btn:active .circle {
+            background: #FE53BB;
+        }
+
+        /* 星星效果样式 */
+        #stars {
+            position: relative;
+            background: transparent;
+            width: 200rem;
+            height: 200rem;
+        }
+
+        /* 星星旋转动画效果 */
+        #stars::after {
+            content: "";
+            position: absolute;
+            top: -10rem;
+            left: -100rem;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(#ffffff 1px, transparent 1%);
+            background-size: 50px 50px;
+            animation: animStarRotate 90s linear infinite;
+        }
+
+        /* 星星移动动画效果 */
+        #stars::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 170%;
+            height: 500%;
+            background-image: radial-gradient(#ffffff 1px, transparent 1%);
+            background-size: 50px 50px;
+            opacity: 0.5;
+            animation: animStar 60s linear infinite;
+        }
+
+        /* 星星移动动画 */
+        @keyframes animStar {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-135rem);
+            }
+        }
+
+        /* 星星旋转动画 */
+        @keyframes animStarRotate {
+            from {
+                transform: rotate(360deg);
+            }
+
+            to {
+                transform: rotate(0);
+            }
+        }
+
+        /* 按钮渐变动画 */
+        @keyframes gradient_301 {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* 发光圆圈脉冲动画 */
+        @keyframes pulse_3011 {
+            0% {
+                transform: scale(0.75);
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+            }
+
+            100% {
+                transform: scale(0.75);
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+            }
+        }
+
+        /* 控制按钮容器样式 */
         #diy {
             position: absolute;
             top: 96%;
@@ -151,7 +254,7 @@
             transform: translate(-50%, -50%);
         }
 
-        /* ==================== 渐变背景 ==================== */
+        /* 渐变背景 */
         .gradient {
             z-index: -2;
             position: absolute;
@@ -162,59 +265,16 @@
             animation: gradientBG 5s ease infinite;
         }
 
-        /* ==================== 动画关键帧 ==================== */
-        @keyframes animStar {
-            from {
-                transform: translateY(0);
-            }
-            to {
-                transform: translateY(-135rem);
-            }
-        }
-
-        @keyframes animStarRotate {
-            from {
-                transform: rotate(360deg);
-            }
-            to {
-                transform: rotate(0);
-            }
-        }
-
-        @keyframes gradient_301 {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        @keyframes pulse_3011 {
-            0% {
-                transform: scale(0.75);
-                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
-            }
-            70% {
-                transform: scale(1);
-                box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
-            }
-            100% {
-                transform: scale(0.75);
-                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-            }
-        }
-
+        /* 背景渐变动画 */
         @keyframes gradientBG {
             0% {
                 background-position: 0% 50%;
             }
+
             50% {
                 background-position: 100% 50%;
             }
+
             100% {
                 background-position: 0% 50%;
             }
@@ -223,156 +283,208 @@
 </head>
 
 <body>
+    <!-- 渐变背景 -->
     <div class="gradient"></div>
+    
+    <!-- 视频播放器 -->
     <video id="player" src="" controls controlsList="nodownload" webkit-playsinline playsinline autoplay onended="refreshVideo()"></video>
+    
+    <!-- 控制按钮容器 -->
     <div id="diy">
         <button onclick="refreshVideo()" id="myButton" class="btn" type="button">
             <strong>SPACE</strong>
+            <!-- 星星效果容器 -->
             <div id="container-stars">
                 <div id="stars"></div>
             </div>
+            <!-- 发光效果 -->
             <div id="glow">
                 <div class="circle"></div>
                 <div class="circle"></div>
             </div>
         </button>
     </div>
-
+    
     <script>
-        /* ==================== API 接口配置 ==================== */
-
-        // 移动端 API 接口列表
-        const mobileApiList = [
-            'http://xjj2.716888.xyz/fenlei/djxjj/dj1.php',
-            'http://xjj2.716888.xyz/fenlei/zj/gengxin/gengxin.php',
-            'http://xjj2.716888.xyz/fenlei/zj/jipinyz/jipinyz.php',
-            'http://xjj2.716888.xyz/fenlei/zj/xuejie/xuejie.php',
-            'http://xjj2.716888.xyz/fenlei/zj/kawayi/kawayi.php',
-            'http://xjj2.716888.xyz/fenlei/zj/nennen/nennen.php',
-            'http://xjj2.716888.xyz/fenlei/zj/sihuawd/sihuawd.php',
-            'http://xjj2.716888.xyz/fenlei/zj/wanmeisc/wanmeisc.php',
-            'http://xjj2.716888.xyz/fenlei/zj/manyao/manyao.php',
-            'http://xjj2.716888.xyz/fenlei/zj/sihuadd/sihuadd.php',
-            'http://xjj2.716888.xyz/fenlei/zj/qingchun/qingchun.php',
-            'http://xjj2.716888.xyz/fenlei/zj/cos/cos.php',
-            'http://xjj2.716888.xyz/fenlei/zj/jiepai/jiepai.php',
-            'http://xjj2.716888.xyz/fenlei/zj/jingpinbz/jingpinbz.php',
-            'http://xjj2.716888.xyz/fenlei/zj/jipinll/jipinll.php',
-            'http://xjj2.716888.xyz/fenlei/zj/nideym/nideym.php',
-            'http://xjj2.716888.xyz/fenlei/zj/tianmei/tianmei.php',
-            'http://xjj2.716888.xyz/fenlei/zj/yusi/yusi.php',
-            'http://xjj2.716888.xyz/fenlei/zj/rewu/rewu.php',
-            'http://xjj2.716888.xyz/fenlei/zj/jingpinsc/jingpinsc.php',
-            'http://xjj2.716888.xyz/fenlei/api/api1.php',
-            'http://xjj2.716888.xyz/fenlei/zj/heji1/heji1.php',
-            'http://xjj2.716888.xyz/fenlei/tkxjj/tk.php',
-            'http://xjj2.716888.xyz/fenlei/mvmn/mvmn.php',
-        ];
-
-        // 电脑端 API 接口列表（空字符串为备用位置，可填入接口）
-        const desktopApiList = [
-            'http://xjj2.716888.xyz/fenlei/api/apiheng1.php',
-            '',
-            '',
-            '',
-        ];
-
-        // 备用 API 接口（各端共用）
-        const fallbackApi = 'https://api.yujn.cn/api/zzxjj.php';
-
-        /* ==================== 工具函数 ==================== */
-
         /**
-         * 检测是否为电脑端
+         * 检测设备类型
+         * 使用UserAgent字符串判断设备类型
          * @returns {boolean} true: 电脑端, false: 移动端
          */
         function isDesktop() {
+            // 检测常见移动设备的UserAgent标识
             return !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
 
         /**
-         * 从接口列表中获取有效的随机接口
-         * @param {string[]} list - API 接口列表
-         * @returns {string|null} 有效接口或 null
+         * API接口配置
+         * 根据设备类型分别配置不同的API接口
          */
-        function getValidApi(list) {
-            const validApis = list.filter(api => api.trim() !== '');
-            if (validApis.length === 0) return null;
-            return validApis[Math.floor(Math.random() * validApis.length)];
-        }
-
-        /**
-         * 根据设备类型获取随机 API 接口
-         * @returns {string} API 接口地址
-         */
-        function getRandomApi() {
-            if (isDesktop()) {
-                const api = getValidApi(desktopApiList);
-                return api || fallbackApi;
+        const apiConfig = {
+            // 电脑端API接口配置
+            desktop: {
+                primary: "https://api.e1e1.top/crosswise/cw.php", // 电脑端主用API
+                backup: "http://xjj2.716888.xyz/fenlei/api/apiheng1.php" // 电脑端备用API
+            },
+            // 移动端API接口配置
+            mobile: {
+                primaryList: [ // 移动端API接口列表
+                    'http://xjj2.716888.xyz/fenlei/djxjj/dj1.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/gengxin/gengxin.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/jipinyz/jipinyz.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/xuejie/xuejie.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/kawayi/kawayi.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/nennen/nennen.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/sihuawd/sihuawd.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/wanmeisc/wanmeisc.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/manyao/manyao.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/sihuadd/sihuadd.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/qingchun/qingchun.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/cos/cos.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/jiepai/jiepai.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/jingpinbz/jingpinbz.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/jipinll/jipinll.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/nideym/nideym.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/tianmei/tianmei.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/yusi/yusi.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/rewu/rewu.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/jingpinsc/jingpinsc.php',
+                    'http://xjj2.716888.xyz/fenlei/api/api1.php',
+                    'http://xjj2.716888.xyz/fenlei/zj/heji1/heji1.php',
+                    'http://xjj2.716888.xyz/fenlei/tkxjj/tk.php',
+                    'http://xjj2.716888.xyz/fenlei/mvmn/mvmn.php'
+                ],
+                backup: 'https://api.yujn.cn/api/zzxjj.php' // 移动端备用API
             }
-            return mobileApiList[Math.floor(Math.random() * mobileApiList.length)];
+        };
+
+        /**
+         * 根据设备类型获取API接口
+         * 电脑端使用固定的主用API，移动端随机选择一个API
+         * @returns {string} API接口地址
+         */
+        function getApiUrl() {
+            // 确定设备类型
+            const deviceType = isDesktop() ? 'desktop' : 'mobile';
+            
+            if (deviceType === 'desktop') {
+                // 电脑端使用主用API
+                return apiConfig.desktop.primary;
+            } else {
+                // 移动端从API列表中随机选择一个
+                const apiList = apiConfig.mobile.primaryList;
+                const randomIndex = Math.floor(Math.random() * apiList.length);
+                return apiList[randomIndex];
+            }
         }
 
         /**
-         * 加载视频并绑定错误处理
-         * @param {HTMLVideoElement} videoElement - 视频元素
+         * 获取备用API接口
+         * 根据设备类型返回对应的备用API
+         * @returns {string} 备用API接口地址
          */
-        function loadVideo(videoElement) {
-            videoElement.src = getRandomApi();
-            videoElement.onerror = function() {
-                console.error('视频加载失败，尝试访问备用 API');
-                videoElement.src = fallbackApi;
+        function getBackupApiUrl() {
+            const deviceType = isDesktop() ? 'desktop' : 'mobile';
+            return apiConfig[deviceType].backup;
+        }
+
+        /**
+         * 加载视频
+         * 根据设备类型选择合适的API接口加载视频
+         * 实现主备API切换机制
+         * @param {HTMLVideoElement} video - 视频元素
+         */
+        function loadVideo(video) {
+            // 获取主用API和备用API
+            const apiUrl = getApiUrl();
+            const backupApiUrl = getBackupApiUrl();
+            
+            console.log('加载视频，使用API:', apiUrl);
+            
+            // 清空并设置新的视频源
+            video.src = '';
+            video.src = apiUrl;
+            
+            // 添加错误处理，当主API失败时使用备用API
+            video.onerror = function() {
+                console.log('主API失败，切换到备用API:', backupApiUrl);
+                video.src = '';
+                video.src = backupApiUrl;
             };
         }
 
-        /* ==================== 初始化 ==================== */
-
-        const video = document.getElementById('player');
-        loadVideo(video);
-
-        /* ==================== 事件监听 ==================== */
-
-        // 空格键切换视频
-        document.addEventListener('keydown', function(event) {
-            if (event.code === 'Space') {
-                event.preventDefault();
-                refreshVideo();
-            }
-        });
-
-        // 刷新视频
+        /**
+         * 刷新视频内容
+         */
         function refreshVideo() {
+            var video = document.getElementById('player');
             loadVideo(video);
         }
 
-        /* ==================== 按钮拖拽功能 ==================== */
+        /**
+         * 监听空格键事件
+         * 当用户按下空格键时，触发刷新按钮点击事件
+         */
+        document.addEventListener('keydown', function(event) {
+            if (event.keyCode === 32) { // 32是空格键的keyCode
+                event.preventDefault(); // 防止页面滚动
+                document.getElementById('myButton').click(); // 触发按钮点击事件
+            }
+        });
 
-        const dragElement = document.getElementById('diy');
-        let isDragging = false;
-        let offsetX = 0;
-        let offsetY = 0;
+        /**
+         * 实现控制按钮的自由拖拽功能
+         */
+        var div = document.getElementById('diy');
+        var isDragging = false;
+        var offsetX = 0;
+        var offsetY = 0;
 
-        dragElement.addEventListener('mousedown', function(e) {
+        /**
+         * 鼠标按下事件处理
+         * 开始拖拽控制按钮容器
+         */
+        div.addEventListener('mousedown', function(e) {
             isDragging = true;
-            offsetX = e.clientX - dragElement.offsetLeft;
-            offsetY = e.clientY - dragElement.offsetTop;
+            offsetX = e.clientX - div.offsetLeft;
+            offsetY = e.clientY - div.offsetTop;
         });
 
+        /**
+         * 鼠标移动事件处理
+         * 实现控制按钮容器的拖拽功能
+         */
         document.addEventListener('mousemove', function(e) {
-            if (!isDragging) return;
+            if (isDragging) {
+                var left = e.clientX - offsetX;
+                var top = e.clientY - offsetY;
 
-            const maxX = window.innerWidth - dragElement.offsetWidth;
-            const maxY = window.innerHeight * 1.027 - dragElement.offsetHeight;
+                // 计算限制范围的最大值
+                var maxX = window.innerWidth - div.offsetWidth;
+                var maxY = window.innerHeight * 1.027 - div.offsetHeight;
 
-            const left = Math.max(0, Math.min(e.clientX - offsetX, maxX));
-            const top = Math.max(0, Math.min(e.clientY - offsetY, maxY));
+                // 限制拖动范围
+                left = Math.max(0, Math.min(left, maxX));
+                top = Math.max(0, Math.min(top, maxY));
 
-            dragElement.style.left = left + 'px';
-            dragElement.style.top = top + 'px';
+                // 更新容器位置
+                div.style.left = left + 'px';
+                div.style.top = top + 'px';
+            }
         });
 
+        /**
+         * 鼠标释放事件处理
+         * 结束拖拽操作
+         */
         document.addEventListener('mouseup', function() {
             isDragging = false;
+        });
+
+        // 页面加载完成后初始化视频
+        window.addEventListener('load', function() {
+            var video = document.getElementById('player');
+            loadVideo(video);
         });
     </script>
 </body>
